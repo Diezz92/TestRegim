@@ -1,57 +1,16 @@
 package ru.netology;
 
-import org.junit.jupiter.api.*;
-import ru.netology.DataGenerator.*;
-import com.github.javafaker.Faker;
-import com.google.gson.Gson;
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.filter.log.LogDetail;
-import io.restassured.http.ContentType;
-import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.Locale;
-
-import static io.restassured.RestAssured.given;
 
 import static com.codeborne.selenide.Selenide.*;
 import static com.codeborne.selenide.Condition.*;
 
 public class TestRegimTest {
 
-    private static final Faker faker = new Faker(new Locale("ru"));
-    private final DataGenerator.AuthData newActiveUser = getNewUser("active");
-    private final DataGenerator.AuthData newBlockedUser = getNewUser("blocked");
+    private final DataGenerator.AuthData newActiveUser = DataGenerator.getNewUser("active");
+    private final DataGenerator.AuthData newBlockedUser = DataGenerator.getNewUser("blocked");
     private final String invalidLogin = DataGenerator.getInvalidLogin();
     private final String invalidPassword = DataGenerator.getInvalidPassword();
-
-    @BeforeEach
-    void setUp() {
-        open("http://localhost:9999");
-    }
-
-    private static final RequestSpecification requestSpec = new RequestSpecBuilder()
-            .setBaseUri("http://localhost")
-            .setPort(9999)
-            .setAccept(ContentType.JSON)
-            .setContentType(ContentType.JSON)
-            .log(LogDetail.ALL)
-            .build();
-
-    public static AuthData getNewUser(String status) {
-        Gson gson = new Gson();
-        AuthData user = new AuthData(faker.name().username(), faker.internet().password(), status);
-
-        given()
-                .spec(requestSpec)
-                .body(gson.toJson(user))
-                .when()
-                .post("/api/system/users")
-                .then()
-                .statusCode(200);
-        return user;
-    }
 
 
     //--- Проверка на заполнение
